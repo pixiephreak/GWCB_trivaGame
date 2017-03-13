@@ -12,6 +12,9 @@ var game = {
 			    game.showNextQuestion();
 			}, 5000, gameLength-1);
 		})
+		$('#choice').on('click', function(){
+
+		})
 	},
 	showQuestion: function(){
 		var clueTypes = ['population', 'capital','region','area'];
@@ -29,21 +32,21 @@ var game = {
 		console.log('cluetype', clueType);
 		var answer = country[clueType];
 		console.log('answer', answer);
-		$('#choices').append(`<li>${answer.toLocaleString()}</li>`);
+		$('#choices').append(`<li class="choice">${answer.toLocaleString()}</li>`);
 		console.log(country);
+		var wrongAnswers =[];
 		function wrongChoices(){
 				//insert excpetion for entries that lack a property
-				var wrongAnswers =[];
 				var wrongAnswer = function(){
 					return result[game.random(result.length)][clueType];
 				}
 				for(let i=0; i<3; i++){
 					thisWrongAnswer = wrongAnswer();
-						if(wrongAnswers.indexOf(thisWrongAnswer) === -1 && thisWrongAnswer != 'undefined'){
+						if(wrongAnswers.indexOf(thisWrongAnswer) === -1 || thisWrongAnswer != 'undefined'){
 							wrongAnswers.push(thisWrongAnswer);
 						}
 				}
-				wrongAnswers.forEach(function(answer){$('#choices').append(`<li>${answer.toLocaleString('en')}</li>`)}
+				wrongAnswers.forEach(function(answer){$('#choices').append(`<li class="choice">${answer.toLocaleString('en')}</li>`)}
 			);
 		}
 		wrongChoices();
