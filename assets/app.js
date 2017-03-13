@@ -11,17 +11,22 @@ function init(result) {
 	// languages.forEach(function(language) {
 	// 		languagesArr.push(language.name);
 	// });
-	var clue = `What is the ${clueType} of ${country.name}`;
-	console.log(clue);
+	var question = `What is the ${clueType} of ${country.name}`;
+	console.log(question)
+	$('#question').html(question);
 	console.log('cluetype', clueType);
 	var answer = country[clueType];
 	console.log('answer', answer);
+	$('#choices').append(`<li>${answer.toLocaleString()}</li>`);
 	console.log(country);
 	var wrongAnswer = function(){
 		return result[random(result.length)][clueType]
 	}
+	//insert excpetion for entries that lack a property
 	var wrongAnswers =[wrongAnswer(), wrongAnswer(), wrongAnswer()];
 	console.log(wrongAnswers)
+	wrongAnswers.forEach(function(answer){$('#choices').append(`<li>${answer.toLocaleString('en')}</li>`)}
+);
 }
 
 //execute when server responds
