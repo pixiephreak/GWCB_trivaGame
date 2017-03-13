@@ -1,7 +1,7 @@
 
 // api endpoint (include languages?):
 var queryURL = 'https://restcountries.eu/rest/v2/all?fields=name;capital;population;region;area;'
-var gameLength = 20;
+var gameLength = 5;
 //code to run on data return
 var game = {
 	init: function(){
@@ -10,7 +10,7 @@ var game = {
 			game.showQuestion();
 			game.thisInterval(function () {
 			    game.showNextQuestion();
-			}, 20*000, gameLength-1);
+			}, 5000, gameLength-1);
 		})
 	},
 	showQuestion: function(){
@@ -31,14 +31,23 @@ var game = {
 		console.log('answer', answer);
 		$('#choices').append(`<li>${answer.toLocaleString()}</li>`);
 		console.log(country);
-		var wrongAnswer = function(){
-			return result[game.random(result.length)][clueType]
+		function wrongChoices(){
+				//insert excpetion for entries that lack a property
+				var wrongAnswers =[];
+				var wrongAnswer = function(){
+					return result[game.random(result.length)][clueType];
+				}
+				for(let i=0; i<3; i++){
+					thisWrongAnswer = wrongAnswer();
+						if(wrongAnswers.indexOf(thisWrongAnswer) === -1 && thisWrongAnswer != 'undefined'){
+							wrongAnswers.push(thisWrongAnswer);
+						}
+				}
+				wrongAnswers.forEach(function(answer){$('#choices').append(`<li>${answer.toLocaleString('en')}</li>`)}
+			);
 		}
-		//insert excpetion for entries that lack a property
-		var wrongAnswers =[wrongAnswer(), wrongAnswer(), wrongAnswer()];
-		console.log(wrongAnswers)
-		wrongAnswers.forEach(function(answer){$('#choices').append(`<li>${answer.toLocaleString('en')}</li>`)}
-	);
+		wrongChoices();
+
 	},
 	thisInterval: function(callback, delay, repetitions) {
     var x = 0;
