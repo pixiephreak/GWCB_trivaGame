@@ -1,16 +1,16 @@
 
 // api endpoint (include languages?):
 var queryURL = 'https://restcountries.eu/rest/v2/all?fields=name;capital;population;region;area;'
+var gameLength = 5;
 //code to run on data return
 var game = {
 	init: function(){
-		$('#start').toggleClass('hidden');
 		$('#start').on('click', function(){
 			$('#start').toggleClass('hidden');
-			game.showQuestion()
-			setTimeout(function(){
-			  game.showQuestion();
-			},5*1000)
+			game.showQuestion();
+			game.thisInterval(function () {
+			    game.showNextQuestion;
+			}, 1000, 5);
 		})
 	},
 	showQuestion: function(){
@@ -39,6 +39,21 @@ var game = {
 		console.log(wrongAnswers)
 		wrongAnswers.forEach(function(answer){$('#choices').append(`<li>${answer.toLocaleString('en')}</li>`)}
 	);
+	},
+	thisInterval: function(callback, delay, repetitions) {
+    var x = 0;
+    var intervalID = window.setInterval(function () {
+
+       callback();
+
+	       if (++x === repetitions) {
+	           	window.clearInterval(intervalID);
+	       	}
+    	}, delay);
+	},
+	showNextQuestion: function(){
+		  $('#choices').empty();
+		  game.showQuestion();
 	},
 	random: function(length){
 		num = Math.floor((Math.random() * length) + 0);
