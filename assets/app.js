@@ -1,7 +1,7 @@
 
 // api endpoint (include languages?):
 var queryURL = 'https://restcountries.eu/rest/v2/all?fields=name;capital;population;region;area;'
-var gameLength = 5;
+var gameLength = 20;
 //code to run on data return
 var game = {
 	init: function(){
@@ -9,8 +9,8 @@ var game = {
 			$('#start').toggleClass('hidden');
 			game.showQuestion();
 			game.thisInterval(function () {
-			    game.showNextQuestion;
-			}, 1000, 5);
+			    game.showNextQuestion();
+			}, 20*000, gameLength-1);
 		})
 	},
 	showQuestion: function(){
