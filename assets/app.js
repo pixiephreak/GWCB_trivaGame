@@ -4,7 +4,14 @@ var queryURL = 'https://restcountries.eu/rest/v2/all?fields=name;capital;populat
 //code to run on data return
 var game = {
 	init: function(){
-		alert('start game');
+		$('#start').toggleClass('hidden');
+		$('#start').on('click', function(){
+			$('#start').toggleClass('hidden');
+			game.showQuestion()
+			setTimeout(function(){
+			  game.showQuestion();
+			},5*1000)
+		})
 	},
 	showQuestion: function(){
 		var clueTypes = ['population', 'capital','region','area'];
