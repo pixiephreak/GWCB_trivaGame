@@ -2,40 +2,14 @@
 // api endpoint (include languages?):
 var queryURL = 'https://restcountries.eu/rest/v2/all?fields=name;capital;population;region;area;'
 //code to run on data return
-function init(result) {
-	game()
-}
-
-function onFail(){
-	game()
-}
-
-//execute when server responds
-apiCall(init);
-
-// apiCall itself is defined as follows:
-function apiCall(callback) {
-    $.ajax({
-             url: queryURL,
-             method: 'GET',
-             success: callback,
-             error: onFail()
-           })
-}
-
-function random(length){
-		num = Math.floor((Math.random() * length) + 0);
-		return num;
-	}
-
-setTimeout(function(){
-        console.log('timer')
-      },15000)
-
-function game(){
-	    var clueTypes = ['population', 'capital','region','area'];
-	    var clueType = clueTypes[random(clueTypes.length)];
-	    var countryIndex = random(result.length);
+var game = {
+	init: function(){
+		alert('start game');
+	},
+	showQuestion: function(){
+		var clueTypes = ['population', 'capital','region','area'];
+	    var clueType = clueTypes[game.random(clueTypes.length)];
+	    var countryIndex = game.random(result.length);
 	    var country = result[countryIndex];
 	    // var languages = result[countryIndex].languages;
 	    // var languagesArr = [];
@@ -51,11 +25,40 @@ function game(){
 		$('#choices').append(`<li>${answer.toLocaleString()}</li>`);
 		console.log(country);
 		var wrongAnswer = function(){
-			return result[random(result.length)][clueType]
+			return result[game.random(result.length)][clueType]
 		}
 		//insert excpetion for entries that lack a property
 		var wrongAnswers =[wrongAnswer(), wrongAnswer(), wrongAnswer()];
 		console.log(wrongAnswers)
 		wrongAnswers.forEach(function(answer){$('#choices').append(`<li>${answer.toLocaleString('en')}</li>`)}
 	);
+	},
+	random: function(length){
+		num = Math.floor((Math.random() * length) + 0);
+		return num;
+	}
+
 }
+function init(result) {
+	game.init()
+}
+
+function onFail(){
+	game.init()
+}
+
+//execute when server responds
+apiCall(init);
+
+// apiCall itself is defined as follows:
+function apiCall(callback) {
+    $.ajax({
+             url: queryURL,
+             method: 'GET',
+             success: callback,
+             error: onFail()
+           })
+}
+
+
+
