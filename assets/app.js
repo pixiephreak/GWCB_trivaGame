@@ -30,7 +30,8 @@
 						game.correct();
 						game.thisInterval(game.startGameAgain, 5000, 1)
 					}else{
-						console.log('click wrong', $(this));
+						game.incorrect();
+						game.thisInterval(game.startGameAgain, 5000, 1)
 					}
 
 
@@ -42,14 +43,10 @@
 			intervalId = setInterval(game.showQuestion,timerDuration-1);
 		},
 		startGameAgain: function(){
-			gameLength = gameLength-counter;
 			stopwatch.reset();
 			stopwatch.start();
 			game.showQuestion();
 			game.startGame();
-		},
-		stopGame: function(){
-			clearInterval(intervalId);
 		},
 		showQuestion: function(){
 			counter++;
@@ -99,7 +96,7 @@
 
 					}
 					wrongChoices();
-					game.checkGameLangth();
+					game.checkGameLength();
 				},
 				correct: function(){
 					score++;
@@ -111,16 +108,29 @@
 					stopwatch.pause();
 					game.stopGame();
 				},
-				checkGameLangth: function(){
+				incorrect: function(){
+					$('#result').html(`The correct answer was ${answer}.`);
+					$('#question').empty();
+					$('#choices').empty();
+					$('#question').html('Please stand by for the next question.')
+					stopwatch.pause();
+				},
+				checkGameLength: function(){
 					if(counter > gameLength){
-						game.stopGame();
-						clearInterval(stopwatchIntervalId);
-						counter = 0;
-						$('#timer').empty();
-						$('#question').empty();
-						$('#choices').empty();
-						$('#start').toggleClass('hidden');
+						//why does the "correct" screen prevent the if condition?
+						game.restart();
 					}
+				},
+				stopGame: function(){
+					//TO-DO: how do I stop the timer
+					clearInterval(intervalId);
+				},
+				restart: function(){
+					counter = 0;
+					$('#timer').empty();
+					$('#question').empty();
+					$('#choices').empty();
+					$('#start').toggleClass('hidden');
 				},
 				thisInterval: function(callback, delay, repetitions) {
 					var x = 0;
