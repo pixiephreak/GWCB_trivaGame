@@ -1,36 +1,42 @@
 
 	// api endpoint (include languages?):
-	var queryURL = 'https://restcountries.eu/rest/v2/all?fields=name;capital;population;region;area;'
+	var queryURL = 'https://restcountries.eu/rest/v2/all?fields=name;capital;population;region;area;';
 	var gameLength = 5;
+	var timerDuration = 12*1000;
+	var time = 0;
 	var answer;
 	var score = 0;
-	var count = 0;
 	var intervalId;
+	var stopwatchIntervalId;
 	//code to run on data return
 	var game = {
 		init: function(){
 
 			$('#start').off('click').on('click', function(){
-				$('#loadingDiv').html('Page loading...')
+				//figure out how to start stopwatch and hide 'page loading' when api comes back (is it in ajax call?)
+				stopwatch.start();
+				$('#loadingDiv').html('Page loading...');
 				setTimeout(game.removeLoader(), 1000);
 				$('#start').toggleClass('hidden');
 				$('#loading').html("questions loading");
-				game.questions();
+				intervalId = setInterval(game.showQuestion,timerDuration);
+				$('#choices').off('click', '.choice').on('click', '.choice', function(){
+					if(($(this).html()) == answer){
+						score++;
+						$('#result').html('Correct!');
+						$('#question').empty();
+						$('#choices').empty();
 
-			})
+					}
+				});
+			});
 
-			$('#choices').off('click', '.choice').on('click', '.choice', function(){
-				if(($(this).html()) == answer){
-					score++;
-					$('#result').html('Correct!');
-				}
-			})
 		},
 		showQuestion: function(){
-			count++;
-			console.log(count);
+			stopwatch.reset();
 			console.log(gameLength);
 			$('#choices').empty();
+			$('#result').empty();
 			var clueTypes = ['population', 'capital','region','area'];
 		    var clueType = clueTypes[game.random(clueTypes.length)];
 		    var countryIndex = game.random(result.length);
@@ -41,7 +47,7 @@
 			// 		languagesArr.push(language.name);
 			// });
 			var question = `What is the ${clueType} of ${country.name}`;
-			console.log(question)
+			console.log(question);
 			$('#question').html(question);
 			console.log('cluetype', clueType);
 			answer = country[clueType];
@@ -55,7 +61,7 @@
 						//insert excpetion for entries that lack a property
 						var wrongAnswer = function(){
 							return result[game.random(result.length)][clueType];
-						}
+						};
 						for(let i=0; i<3; i++){
 							var thisWrongAnswer = wrongAnswer();
 							// typeof thisWrongAnswer != 'undefined'
@@ -74,15 +80,10 @@
 						}
 						wrongAnswers.forEach(function(answer){
 							$('#choices').append(`<li class="choice">${answer.toLocaleString('en')}</li>`);
-						})
+						});
 
 				}
 			wrongChoices();
-		},
-		questions: function(){
-
-		intervalId = setInterval(game.showQuestion,5*1000);
-
 		},
 		removeLoader: function(){
 			// fadeOut complete. Remove the loading div
@@ -96,12 +97,54 @@
 		}
 
 	}
+
+	var stopwatch = {
+
+	  time: 0,
+	  count: function() {
+	  	console.log('incounter',stopwatch.time);
+	        seconds = stopwatch.time++
+	        $('#timer').html(stopwatch.timeConverter(seconds));
+	  },
+	  start: function(){
+	  	stopwatchIntervalId = setInterval(stopwatch.count,1000);
+	  },
+	  timeConverter: function(t) {
+
+		    //  Takes the current time in seconds and convert it to minutes and seconds (mm:ss).
+		    var minutes = Math.floor(t / 60);
+		    var seconds = t - (minutes * 60);
+
+		    if (seconds < 10) {
+		      seconds = "0" + seconds;
+		    }
+
+		    if (minutes === 0) {
+		      minutes = "00";
+		    }
+
+		    else if (minutes < 10) {
+		      minutes = "0" + minutes;
+		    }
+
+		    return minutes + ":" + seconds;
+		  	},
+		  	reset: function() {
+
+		  	  stopwatch.time = 0;
+		  	  console.log('inreset',stopwatch.time);
+		  	  //  TODO: Change the "display" div to "00:00."
+		  	  $('#timer').html('00:00');
+
+		  	}
+		}
+
 	function init(result) {
-		game.init()
+		game.init();
 	}
 
 	function onFail(){
-		game.init()
+		game.init();
 	}
 
 	//execute when server responds
@@ -114,7 +157,7 @@
 	             method: 'GET',
 	             success: callback,
 	             error: onFail()
-	           })
+	           });
 	}
 
 

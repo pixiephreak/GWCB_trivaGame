@@ -4,52 +4,51 @@
 	<title></title>
 </head>
 <body>
-<div id="choices"></div>
+<div id="timer"></div>
 
 </body>
 <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
 
 <script type="text/javascript">
-// var answer;
+var stopwatch = {
 
-// if(typeof answer != 'undefined'){
-// 	$('#choices').append(`<li class="choice">${answer.toLocaleString()}</li>`);
-// 	}else{
-// 		// game.showQuestion();
-// 		console.log(typeof answer, answer);
-// 	}
+	  time: 0,
+	  count: function() {
+	  	console.log('incounter',stopwatch.time);
+	        seconds = stopwatch.time++
+	        $('#timer').html(stopwatch.timeConverter(seconds));
+	  },
+	  start: function(){
+	  	stopwatchIntervalId = setInterval(stopwatch.count,1000);
+	  },
+	  timeConverter: function(t) {
 
-	var result = [{"name":"Zambia","capital":"Lusaka","region":"Africa","population":15933883,"area":752612.0},{"name":"Zimbabwe","capital":"Harare","region":"Africa","population":14240168,"area":390757.0},{"name":"Another Zambia","capital":"Lusaka","region":"Africa","population":15933883,"area":752612.0}]
+		    //  Takes the current time in seconds and convert it to minutes and seconds (mm:ss).
+		    var minutes = Math.floor(t / 60);
+		    var seconds = t - (minutes * 60);
 
-	var clueType = 'region';
-	var wrongAnswers =[];
-	function wrongChoices(){
-			//insert excpetion for entries that lack a property
-			var wrongAnswer = function(){
-				return result[random(result.length)][clueType];
-				console.log(result[random(result.length)][clueType])
-			}
-			for(let i=0; i<3; i++){
-				var thisWrongAnswer = wrongAnswer();
-				// typeof thisWrongAnswer != 'undefined'
-				console.log(wrongAnswers.indexOf(thisWrongAnswer), typeof thisWrongAnswer);
-					if(wrongAnswers.indexOf(thisWrongAnswer) === -1){
-						if(typeof thisWrongAnswer != 'undefined')
-						wrongAnswers.push(thisWrongAnswer);
-					}else{
-						console.log('it is undefined');
-					}
-				console.log(wrongAnswers);
-			}
-	}
-	wrongChoices();
-		// wrongAnswers.forEach(function(answer){
-		// 		$('#choices').append(`<li class="choice">${answer.toLocaleString('en')}</li>`)}
-		// );
+		    if (seconds < 10) {
+		      seconds = "0" + seconds;
+		    }
 
-	function random(length){
-			num = Math.floor((Math.random() * length) + 0);
-			return num;
+		    if (minutes === 0) {
+		      minutes = "00";
+		    }
+
+		    else if (minutes < 10) {
+		      minutes = "0" + minutes;
+		    }
+
+		    return minutes + ":" + seconds;
+		  	},
+		  	reset: function() {
+
+		  	  stopwatch.time = 0;
+		  	  console.log('inreset',stopwatch.time);
+		  	  //  TODO: Change the "display" div to "00:00."
+		  	  $('#timer').html('00:00');
+
+		  	}
 		}
 	</script>
 </html>
