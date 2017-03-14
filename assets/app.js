@@ -1,13 +1,14 @@
 
 	// api endpoint (include languages?):
 	var queryURL = 'https://restcountries.eu/rest/v2/all?fields=name;capital;population;region;area;';
-	var gameLength = 5;
+	var gameLength = 2;
 	var timerDuration = 12*1000;
 	var time = 0;
 	var answer;
 	var score = 0;
 	var intervalId;
 	var stopwatchIntervalId;
+	var counter=0;
 	//code to run on data return
 	var game = {
 		init: function(){
@@ -19,6 +20,7 @@
 				setTimeout(game.removeLoader(), 1000);
 				$('#start').toggleClass('hidden');
 				$('#loading').html("questions loading");
+				//why is there a ten second delay before game.showQuestion fires?
 				intervalId = setInterval(game.showQuestion,timerDuration);
 				$('#choices').off('click', '.choice').on('click', '.choice', function(){
 					if(($(this).html()) == answer){
@@ -33,8 +35,9 @@
 
 		},
 		showQuestion: function(){
+			counter++;
+			console.log(counter);
 			stopwatch.reset();
-			console.log(gameLength);
 			$('#choices').empty();
 			$('#result').empty();
 			var clueTypes = ['population', 'capital','region','area'];
@@ -49,13 +52,14 @@
 			var question = `What is the ${clueType} of ${country.name}`;
 			console.log(question);
 			$('#question').html(question);
-			console.log('cluetype', clueType);
 			answer = country[clueType];
 			console.log('answer', answer);
 			if(typeof answer != 'undefined'){
 				$('#choices').append(`<li class="choice">${answer.toLocaleString()}</li>`);
+				}else{
+				$('#choices').append(`<li class="choice">Freebie.We don't know.</li>`);
 				}
-			console.log(country);
+
 			wrongAnswers = [];
 			function wrongChoices(){
 						//insert excpetion for entries that lack a property
@@ -64,17 +68,11 @@
 						};
 						for(let i=0; i<3; i++){
 							var thisWrongAnswer = wrongAnswer();
-							// typeof thisWrongAnswer != 'undefined'
-							console.log(thisWrongAnswer, wrongAnswers.indexOf(thisWrongAnswer), typeof thisWrongAnswer);
 								if(wrongAnswers.indexOf(thisWrongAnswer) === -1 && thisWrongAnswer != answer){
 									if(typeof thisWrongAnswer != 'undefined')
 									wrongAnswers.push(thisWrongAnswer);
 								}else{
-									var thisWrongAnswer = wrongAnswer();
-									if(wrongAnswers.indexOf(thisWrongAnswer) === -1){
-										if(typeof thisWrongAnswer != 'undefined')
-										wrongAnswers.push(thisWrongAnswer);
-									}
+									wrongAnswer.push("I really don't know.")
 								}
 							console.log(wrongAnswers);
 						}
@@ -84,6 +82,15 @@
 
 				}
 			wrongChoices();
+			if(counter > gameLength){
+				clearInterval(intervalId);
+				clearInterval(stopwatchIntervalId);
+				counter = 0;
+				$('#timer').empty();
+				$('#question').empty();
+				$('#choices').empty();
+				$('#start').toggleClass('hidden');
+			}
 		},
 		removeLoader: function(){
 			// fadeOut complete. Remove the loading div
@@ -102,7 +109,6 @@
 
 	  time: 0,
 	  count: function() {
-	  	console.log('incounter',stopwatch.time);
 	        seconds = stopwatch.time++
 	        $('#timer').html(stopwatch.timeConverter(seconds));
 	  },
@@ -132,7 +138,6 @@
 		  	reset: function() {
 
 		  	  stopwatch.time = 0;
-		  	  console.log('inreset',stopwatch.time);
 		  	  //  TODO: Change the "display" div to "00:00."
 		  	  $('#timer').html('00:00');
 
