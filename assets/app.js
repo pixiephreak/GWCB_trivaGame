@@ -1,40 +1,50 @@
 
 	// api endpoint (include languages?):
 	var queryURL = 'https://restcountries.eu/rest/v2/all?fields=name;capital;population;region;area;';
-	var gameLength = 4;
+	//set number of questions
+	var gameLength = 10;
+	//set how much time the player has to answer + 2
 	var timerDuration = 22*1000;
+	//time count for stopwatch
 	var time;
+	//correct answer each time a question loads
 	var answer;
+	//record score for each round of game
 	var score = 0;
+	//interval for question screen
 	var intervalId;
+	//interval for stopwatch
 	var stopwatchIntervalId;
+	//interval for correct screen
 	var correctIntervalId;
+	var timeUpInterval;
+	//keeps track of how many questions have been asked
 	var counter=0;
 	//code to run on data return
 	var game = {
 		init: function(){
 
 			$('#start').off('click').on('click', function(){
-				//figure out how to start stopwatch and hide 'page loading' when api comes back (is it in ajax call?)
+				//figure out how to start stopwatch and hide 'page loading' at moment of response(is it in ajax call?)
 				stopwatch.start();
 				$('#loadingDiv').html('Page loading...');
 				setTimeout(game.removeLoader(), 100);
 				$('#start').toggleClass('hidden');
 				$('#loading').html("questions loading");
-				//make first question load instantly
+				//load first instantly
 				game.showQuestion();
 				//load reamaining questions at interval
 				game.startGame();
 				$('#choices').off('click', '.choice').on('click', '.choice', function(){
 					if(($(this).html()) == answer){
+						//if answer is correct, show correct screen
 						game.correct();
+						//start the game again after x seconds
 						game.thisInterval(game.startGameAgain, 5000, 1)
 					}else{
 						game.incorrect();
 						game.thisInterval(game.startGameAgain, 5000, 1)
 					}
-
-
 				});
 			});
 
@@ -69,7 +79,11 @@
 			answer = country[clueType].toString();
 			console.log('answer', answer);
 			if(typeof answer != 'undefined'){
-				$('#choices').append(`<li class="choice">${answer.toLocaleString()}</li>`);
+				if(game.random(2) === 0){
+					$('#choices').append(`<li class="choice">${answer.toLocaleString()}</li>`);
+					}else{
+					$('#choices').prepend(`<li class="choice">${answer.toLocaleString()}</li>`);
+					}
 			}else{
 				$('#choices').append(`<li class="choice">Freebie.We don't know.</li>`);
 			}
@@ -97,6 +111,7 @@
 					}
 					wrongChoices();
 					game.checkGameLength();
+					game.timeUp();
 				},
 				correct: function(){
 					score++;
@@ -106,6 +121,7 @@
 					$('#choices').empty();
 					$('#question').html('Please stand by for the next question.')
 					stopwatch.pause();
+					// TO-DO why did I put this here?
 					game.stopGame();
 				},
 				incorrect: function(){
@@ -114,18 +130,33 @@
 					$('#choices').empty();
 					$('#question').html('Please stand by for the next question.')
 					stopwatch.pause();
+					// TO-DO why did I put this here?
+					game.stopGame();
+				},
+				timeOut: function(){
+					$('#result').html(`Time's up. The correct answer was ${answer}.`);
+					$('#question').empty();
+					$('#choices').empty();
+					$('#question').html('Please stand by for the next question.')
+					stopwatch.pause();
+					// TO-DO why did I put this here?
+					game.stopGame();
+					game.thisInterval(game.startGameAgain, 5000, 1)
 				},
 				checkGameLength: function(){
 					if(counter > gameLength){
-						//why does the "correct" screen prevent the if condition?
 						game.restart();
 					}
 				},
 				stopGame: function(){
+					//why does the "correct" screen prevent the game from stopping at end?
 					//TO-DO: how do I stop the timer
 					clearInterval(intervalId);
+					clearInterval(stopwatchIntervalId);
+					clearInterval(correctIntervalId);
 				},
 				restart: function(){
+					game.stopGame();
 					counter = 0;
 					$('#timer').empty();
 					$('#question').empty();
@@ -141,9 +172,12 @@
 						}
 					}, delay);
 				},
+				timeUp: function(){
+					timeUpInterval = setInterval(game.timeOut, 21*1000);
+				},
 				removeLoader: function(){
 			// fadeOut complete. Remove the loading div
-			$( "#loadingDiv" ).fadeOut(3000, function() {
+			$( "#loadingDiv" ).fadeOut(1000, function() {
       			 $( "#loadingDiv" ).remove(); //makes page more lightweight
       			});
 		},
