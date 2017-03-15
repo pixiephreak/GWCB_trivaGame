@@ -80,6 +80,7 @@
 			console.log('answer', answer);
 			if(typeof answer != 'undefined'){
 				if(game.random(2) === 0){
+					//TO-DO: keep working on this to that correct isn't always first;
 					$('#choices').append(`<li class="choice">${answer.toLocaleString()}</li>`);
 					}else{
 					$('#choices').prepend(`<li class="choice">${answer.toLocaleString()}</li>`);
@@ -130,7 +131,6 @@
 					$('#choices').empty();
 					$('#question').html('Please stand by for the next question.')
 					stopwatch.pause();
-					// TO-DO why did I put this here?
 					game.stopGame();
 				},
 				timeOut: function(){
@@ -139,7 +139,6 @@
 					$('#choices').empty();
 					$('#question').html('Please stand by for the next question.')
 					stopwatch.pause();
-					// TO-DO why did I put this here?
 					game.stopGame();
 					game.thisInterval(game.startGameAgain, 5000, 1)
 				},
@@ -151,6 +150,7 @@
 				stopGame: function(){
 					//why does the "correct" screen prevent the game from stopping at end?
 					//TO-DO: how do I stop the timer
+					clearInterval(timeUpInterval);
 					clearInterval(intervalId);
 					clearInterval(stopwatchIntervalId);
 					clearInterval(correctIntervalId);
