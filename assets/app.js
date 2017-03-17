@@ -1,10 +1,12 @@
 
 	// api endpoint (include languages?):
 	var queryURL = 'https://restcountries.eu/rest/v2/all?fields=name;capital;population;region;area;';
-	//set number of questions
-	var gameLength = 3;
+	//set number of questions TO-DO ask for user input
+	var gameLength = 10;
 	//set how much time the player has to answer + 2
-	var timerDuration = 7*1000;
+	var timerDuration = 16*1000;
+	// set how much time the player has to see result +2
+	var resultDuration = 7*1000
 	//time count for stopwatch
 	var time;
 	//correct answer each time a question loads
@@ -25,11 +27,15 @@
 	var timeUpInterval;
 	//keeps track of how many questions have been asked
 	var counter=0;
+	//keep track of clicks
+	var click = false
+
 	//code to run on data return
 	var game = {
 		init: function(){
 			$('#start').off('click').on('click', function(){
 				//figure out how to start stopwatch and hide 'page loading' at moment of response(is it in ajax call?)
+				$('#game-over').empty();
 				stopwatch.start();
 				$('#loadingDiv').html('Page loading...');
 				setTimeout(game.removeLoader(), 100);
@@ -40,24 +46,38 @@
 				//load reamaining questions at interval
 				game.startGame();
 				$('#choices').off('click', '.choice').on('click', '.choice', function(){
+					click = true;
 					if(($(this).html()) == answer){
-						//if answer is correct, show correct screen
-						game.correct();
-						//start the game again after x seconds
-						game.thisInterval(game.startGameAgain, 5000, 1)
+						game.stopGame();
+						if(counter>=gameLength){
+							game.correct();
+							game.restart();
+							}else{
+							//show correct screen
+							game.correct();
+							//start the game again after x seconds
+							game.thisInterval(game.startGameAgain, resultDuration, 1)
+						}
 					}else{
+						game.stopGame();
+						if(counter>=gameLength){
+							game.incorrect();
+							game.restart();
+						}else{
 						game.incorrect();
-						game.thisInterval(game.startGameAgain, 5000, 1)
+						game.thisInterval(game.startGameAgain, resultDuration, 1)
+					}
 					}
 				});
 			});
 
 		},
 		startGame: function(){
-			intervalId = setInterval(game.showQuestion,timerDuration-1);
+			intervalId = setInterval(game.showQuestion,timerDuration);
 		},
 		startGameAgain: function(){
-			stopwatch.reset();
+			click = false;
+			// stopwatch.reset();
 			stopwatch.start();
 			game.showQuestion();
 			game.startGame();
@@ -84,7 +104,7 @@
 			answers = [];
 			console.log('answer', answer);
 			if(typeof answer != 'undefined'){
-				answers.push(answer);
+				answers.push(answer.toLocaleString('en'));
 			}else{
 				('#choices').append(`<li class="choice">Freebie.We don't know.</li>`);
 			}
@@ -110,50 +130,45 @@
 
 					}
 					wrongChoices();
-					game.checkGameLength();
-					//TO-DO ADD AN IF STATMENT HERE AND ADD TOGGLE GAME TO STOPGAME FUNCTION
-					// if(){
-					// 	game.timeUp();
-					// }
+					//only if another correct answer isn't clicked
+						game.thisInterval(game.timeUp, timerDuration-1, 1);
+
+
+
 				},
 				correct: function(){
-					score++;
-					$('#correct').html(`Correct: ${score}`)
+					correct++;
+					$('#correct').html(`Correct: ${correct}`)
 					$('#result').html('Correct!');
 					$('#question').empty();
 					$('#choices').empty();
 					$('#question').html('Please stand by for the next question.')
 					stopwatch.pause();
-					// TO-DO why did I put this here?
-					game.stopGame();
+
 				},
 				incorrect: function(){
-					$('#incorrect').html(`Incorrect: ${score}`)
+					incorrect++
+					$('#incorrect').html(`Incorrect: ${incorrect}`)
 					$('#result').html(`The correct answer was ${answer}.`);
 					$('#question').empty();
 					$('#choices').empty();
 					$('#question').html('Please stand by for the next question.')
 					stopwatch.pause();
-					game.stopGame();
+
 				},
 				timeOut: function(){
-					$('#unanswered').html(`Unanswered: ${score}`)
+					unanswered++
+					$('#unanswered').html(`Unanswered: ${unanswered}`)
 					$('#result').html(`Time's up. The correct answer was ${answer}.`);
 					$('#question').empty();
 					$('#choices').empty();
 					$('#question').html('Please stand by for the next question.')
 					stopwatch.pause();
-					game.stopGame();
-					game.thisInterval(game.startGameAgain, 5000, 1)
-				},
-				checkGameLength: function(){
-					if(counter > gameLength){
-						game.restart();
-					}
 				},
 				stopGame: function(){
 					//why does the "correct" screen prevent the game from stopping at end?
 					//TO-DO: how do I stop the timer
+					console.log('stopping')
 					clearInterval(timeUpInterval);
 					clearInterval(intervalId);
 					clearInterval(stopwatchIntervalId);
@@ -167,7 +182,9 @@
 					$('#question').empty();
 					$('#choices').empty();
 					$('#start').toggleClass('hidden');
+					$('#game-over').html('You answered all the questions. Thanks for playing.');
 				},
+				//only run the code a set amount of times
 				thisInterval: function(callback, delay, repetitions) {
 					var x = 0;
 					var intervalID = window.setInterval(function () {
@@ -178,7 +195,18 @@
 					}, delay);
 				},
 				timeUp: function(){
-					timeUpInterval = setInterval(game.timeOut, 21*1000);
+					if(!click){
+					game.stopGame();
+					if(counter>=gameLength){
+							game.timeOut();
+							game.restart();
+							}else{
+							//show correct screen
+							game.timeOut();
+							//start the game again after x seconds
+							game.thisInterval(game.startGameAgain, resultDuration, 1)
+						}
+					}
 				},
 				removeLoader: function(){
 			// fadeOut complete. Remove the loading div
@@ -245,7 +273,7 @@
 		},
 		reset: function() {
 
-			stopwatch.time = 20;
+			stopwatch.time = 15;
 		  	  //  TODO: Change the "display" div to "00:00."
 		  	  $('#timer').html('00:20');
 
@@ -273,17 +301,5 @@
 		});
 	}
 
-
-		// thisInterval: function(callback, delay, repetitions) {
-	 //    var x = 0;
-	 //    var intervalID = window.setInterval(function () {
-
-	 //       callback();
-
-		//        if (++x === repetitions) {
-		//            	window.clearInterval(intervalID);
-		//        	}
-	 //    	}, delay);
-		// },
 
 
