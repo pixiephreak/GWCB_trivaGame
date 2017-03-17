@@ -100,11 +100,11 @@
 			var question = `What is the ${clueType} of ${country.name}?`;
 			console.log(question);
 			$('#question').html(question);
-			answer = country[clueType].toString();
+			answer = country[clueType].toLocaleString('en');
 			answers = [];
 			console.log('answer', answer);
 			if(typeof answer != 'undefined'){
-				answers.push(answer.toLocaleString('en'));
+				answers.push(answer);
 			}else{
 				('#choices').append(`<li class="choice">Freebie.We don't know.</li>`);
 			}
