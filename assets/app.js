@@ -2,28 +2,32 @@
 	// api endpoint (include languages?):
 	var queryURL = 'https://restcountries.eu/rest/v2/all?fields=name;capital;population;region;area;';
 	//set number of questions
-	var gameLength = 10;
+	var gameLength = 3;
 	//set how much time the player has to answer + 2
-	var timerDuration = 22*1000;
+	var timerDuration = 7*1000;
 	//time count for stopwatch
 	var time;
 	//correct answer each time a question loads
 	var answer;
-	//record score for each round of game
-	var score = 0;
+	//record # correct for each round of game
+	var correct = 0;
+	//record # inccorect for each round of game
+	var incorrect = 0;
+	//record # inccorect for each round of game
+	var unanswered = 0;
 	//interval for question screen
 	var intervalId;
 	//interval for stopwatch
 	var stopwatchIntervalId;
 	//interval for correct screen
 	var correctIntervalId;
+	// interval for timeUp scree
 	var timeUpInterval;
 	//keeps track of how many questions have been asked
 	var counter=0;
 	//code to run on data return
 	var game = {
 		init: function(){
-
 			$('#start').off('click').on('click', function(){
 				//figure out how to start stopwatch and hide 'page loading' at moment of response(is it in ajax call?)
 				stopwatch.start();
@@ -73,23 +77,17 @@
 			// languages.forEach(function(language) {
 			// 		languagesArr.push(language.name);
 			// });
-			var question = `What is the ${clueType} of ${country.name}`;
+			var question = `What is the ${clueType} of ${country.name}?`;
 			console.log(question);
 			$('#question').html(question);
 			answer = country[clueType].toString();
+			answers = [];
 			console.log('answer', answer);
 			if(typeof answer != 'undefined'){
-				if(game.random(2) === 0){
-					//TO-DO: keep working on this to that correct isn't always first;
-					$('#choices').append(`<li class="choice">${answer.toLocaleString()}</li>`);
-					}else{
-					$('#choices').prepend(`<li class="choice">${answer.toLocaleString()}</li>`);
-					}
+				answers.push(answer);
 			}else{
-				$('#choices').append(`<li class="choice">Freebie.We don't know.</li>`);
+				('#choices').append(`<li class="choice">Freebie.We don't know.</li>`);
 			}
-
-			wrongAnswers = [];
 			function wrongChoices(){
 						//insert excpetion for entries that lack a property
 						var wrongAnswer = function(){
@@ -97,26 +95,30 @@
 						};
 						for(let i=0; i<3; i++){
 							var thisWrongAnswer = wrongAnswer();
-							if(wrongAnswers.indexOf(thisWrongAnswer) === -1 && thisWrongAnswer != answer){
+							if(answers.indexOf(thisWrongAnswer) === -1 && thisWrongAnswer != answer){
 								if(typeof thisWrongAnswer != 'undefined')
-									wrongAnswers.push(thisWrongAnswer);
+									answers.push(thisWrongAnswer);
 							}else{
-								wrongAnswers.push("I really don't know.")
+								answers.push("I really don't know.")
 							}
-							console.log(wrongAnswers);
+							game.shuffle(answers);
+							console.log(answers);
 						}
-						wrongAnswers.forEach(function(answer){
+						answers.forEach(function(answer){
 							$('#choices').append(`<li class="choice">${answer.toLocaleString('en')}</li>`);
 						});
 
 					}
 					wrongChoices();
 					game.checkGameLength();
-					game.timeUp();
+					//TO-DO ADD AN IF STATMENT HERE AND ADD TOGGLE GAME TO STOPGAME FUNCTION
+					// if(){
+					// 	game.timeUp();
+					// }
 				},
 				correct: function(){
 					score++;
-					$('#score').html(`Score: ${score}`)
+					$('#correct').html(`Correct: ${score}`)
 					$('#result').html('Correct!');
 					$('#question').empty();
 					$('#choices').empty();
@@ -126,6 +128,7 @@
 					game.stopGame();
 				},
 				incorrect: function(){
+					$('#incorrect').html(`Incorrect: ${score}`)
 					$('#result').html(`The correct answer was ${answer}.`);
 					$('#question').empty();
 					$('#choices').empty();
@@ -134,6 +137,7 @@
 					game.stopGame();
 				},
 				timeOut: function(){
+					$('#unanswered').html(`Unanswered: ${score}`)
 					$('#result').html(`Time's up. The correct answer was ${answer}.`);
 					$('#question').empty();
 					$('#choices').empty();
@@ -156,6 +160,7 @@
 					clearInterval(correctIntervalId);
 				},
 				restart: function(){
+					console.log('firing restart', counter);
 					game.stopGame();
 					counter = 0;
 					$('#timer').empty();
@@ -184,6 +189,25 @@
 		random: function(length){
 			num = Math.floor((Math.random() * length) + 0);
 			return num;
+		},
+		// Fisher–Yates Shuffle
+		shuffle: function(array) {
+		  var currentIndex = array.length, temporaryValue, randomIndex;
+
+		  // While there remain elements to shuffle...
+		  while (0 !== currentIndex) {
+
+		    // Pick a remaining element...
+		    randomIndex = Math.floor(Math.random() * currentIndex);
+		    currentIndex -= 1;
+
+		    // And swap it with the current element.
+		    temporaryValue = array[currentIndex];
+		    array[currentIndex] = array[randomIndex];
+		    array[randomIndex] = temporaryValue;
+		  }
+
+		  return array;
 		}
 
 	};
@@ -226,7 +250,7 @@
 		  	  $('#timer').html('00:20');
 
 		  	}
-		  };
+		};
 
 		  function init(result) {
 		  	game.init();

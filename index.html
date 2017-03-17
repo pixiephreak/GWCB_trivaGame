@@ -5,14 +5,26 @@
 	<meta charset="utf-8">
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<!-- custom css -->
+	<link rel="stylesheet" type="text/css" href="assets/styles.css">
 </head>
+<header>
+	<div class="container">
+		<div class="row">
+			<div class="jumbotron text-center visible" id="banner">
+				<img src="assets/imgs/trumpBuster.png" class="img img-responsive img-thumbnail col-xs-12 col-md-2" alt="trump buster placeholder" />
+				<h1>Nationalism Busters</h1>
+				<h2>Learn cool facts about interesting countries throughout the world</h2>
+				<h3 id='Correct'>Correct:</h3>
+				<h3 id='Incorrect'>Incorrect:</h3>
+				<h3 id="Unanswered">Unanswered:</h3>
+			</div>
+		</div>
+	</div>
+</header>
 <body>
 	<div class=container>
-		<div class = "row">
-
-			<h1>Nationalism Busters</h1>
-			<h2>Learn Facts about cool countries throughout the world</h2>
-			<h3 id='score'>Score:<h3>
+		<div class = "row text-center">
 			<h2 id="loadingDiv"></h2>
 			<button id="start">start</button>
 			<div id="timer"></div>
