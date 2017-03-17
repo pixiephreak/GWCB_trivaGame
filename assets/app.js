@@ -2,11 +2,11 @@
 	// api endpoint (include languages?):
 	var queryURL = 'https://restcountries.eu/rest/v2/all?fields=name;capital;population;region;area;';
 	//set number of questions TO-DO ask for user input
-	var gameLength = 10;
+	var gameLength = 5;
 	//set how much time the player has to answer + 2
 	var timerDuration = 16*1000;
 	// set how much time the player has to see result +2
-	var resultDuration = 7*1000
+	var resultDuration = 5*1000
 	//time count for stopwatch
 	var time;
 	//correct answer each time a question loads
@@ -37,10 +37,10 @@
 				//figure out how to start stopwatch and hide 'page loading' at moment of response(is it in ajax call?)
 				$('#game-over').empty();
 				stopwatch.start();
-				$('#loadingDiv').html('Page loading...');
+				// $('#loadingDiv').html('Page loading...');
 				setTimeout(game.removeLoader(), 100);
 				$('#start').toggleClass('hidden');
-				$('#loading').html("questions loading");
+				// $('#loading').html("questions loading");
 				//load first instantly
 				game.showQuestion();
 				//load reamaining questions at interval
@@ -77,7 +77,7 @@
 		},
 		startGameAgain: function(){
 			click = false;
-			// stopwatch.reset();
+			stopwatch.reset();
 			stopwatch.start();
 			game.showQuestion();
 			game.startGame();
@@ -130,8 +130,10 @@
 
 					}
 					wrongChoices();
-					//only if another correct answer isn't clicked
-						game.thisInterval(game.timeUp, timerDuration-1, 1);
+					if(stopwatch.time === 1){
+						console.log(stopwatch.time);
+						timeUp();
+					}
 
 
 
@@ -197,6 +199,7 @@
 				timeUp: function(){
 					if(!click){
 					game.stopGame();
+					stopwatch.pause();
 					if(counter>=gameLength){
 							game.timeOut();
 							game.restart();
@@ -275,7 +278,7 @@
 
 			stopwatch.time = 15;
 		  	  //  TODO: Change the "display" div to "00:00."
-		  	  $('#timer').html('00:20');
+		  	  $('#timer').html('00:15');
 
 		  	}
 		};
