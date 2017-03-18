@@ -130,10 +130,8 @@
 
 					}
 					wrongChoices();
-					if(stopwatch.time === 1){
-						console.log(stopwatch.time);
-						timeUp();
-					}
+					console.log(`stopwatch: ${stopwatch.time}`);
+
 
 
 
@@ -247,9 +245,13 @@
 		count: function() {
 			seconds = stopwatch.time--;
 			$('#timer').html(stopwatch.timeConverter(seconds));
+			if(stopwatch.time === 0){
+				game.timeUp();
+			}
 		},
 		start: function(){
 			stopwatchIntervalId = setInterval(stopwatch.count,1000);
+			//set timeout here to check for stopwatch.time == 1?
 		},
 		pause: function(){
 			clearInterval(stopwatchIntervalId);
