@@ -49,6 +49,7 @@
 					click = true;
 					if(($(this).html()) == answer){
 						game.stopGame();
+						//have the set number of questions been asked?
 						if(counter>=gameLength){
 							game.correct();
 							game.restart();
@@ -61,10 +62,14 @@
 					}else{
 						game.stopGame();
 						if(counter>=gameLength){
+							// display incorrect scree
 							game.incorrect();
+							// show/hide elem for start of game
 							game.restart();
 						}else{
 						game.incorrect();
+						//if the game isn't over, then start it again after the established # of seconds
+						//Question: what would be a better/other way to do this?
 						game.thisInterval(game.startGameAgain, resultDuration, 1)
 					}
 					}
@@ -72,9 +77,11 @@
 			});
 
 		},
+		//show questions at a set interval
 		startGame: function(){
 			intervalId = setInterval(game.showQuestion,timerDuration);
 		},
+		//reset intervals and call them again to restart
 		startGameAgain: function(){
 			click = false;
 			stopwatch.reset();
@@ -82,16 +89,20 @@
 			game.showQuestion();
 			game.startGame();
 		},
+		//use data in api response object to create trivia questions
 		showQuestion: function(){
+			//reset model data and displays
 			counter++;
 			console.log(counter);
 			stopwatch.reset();
 			$('#choices').empty();
 			$('#result').empty();
+			//select country and clue type for each question
 			var clueTypes = ['population', 'capital','region','area'];
 			var clueType = clueTypes[game.random(clueTypes.length)];
 			var countryIndex = game.random(result.length);
 			var country = result[countryIndex];
+			//TO-DO: write loop to if clueType is a language
 		    // var languages = result[countryIndex].languages;
 		    // var languagesArr = [];
 			// languages.forEach(function(language) {
@@ -100,14 +111,17 @@
 			var question = `What is the ${clueType} of ${country.name}?`;
 			console.log(question);
 			$('#question').html(question);
+			//Retreive and store answer from data obj
 			answer = country[clueType].toLocaleString('en');
 			answers = [];
 			console.log('answer', answer);
 			if(typeof answer != 'undefined'){
 				answers.push(answer);
 			}else{
+				//if answer is undefined, include alternative data
 				('#choices').append(`<li class="choice">Freebie.We don't know.</li>`);
 			}
+			//generate wrong choices by accessing clueType data on other countries
 			function wrongChoices(){
 						//insert excpetion for entries that lack a property
 						var wrongAnswer = function(){
@@ -121,21 +135,19 @@
 							}else{
 								answers.push("I really don't know.")
 							}
+							//randomize order that answers are stored in answers array
 							game.shuffle(answers);
 							console.log(answers);
 						}
+						//display each entry in answers array by adding to dom
 						answers.forEach(function(answer){
 							$('#choices').append(`<li class="choice">${answer.toLocaleString('en')}</li>`);
 						});
 
 					}
 					wrongChoices();
-					console.log(`stopwatch: ${stopwatch.time}`);
-
-
-
-
 				},
+				//display appropriate info if user clicks correct answer
 				correct: function(){
 					correct++;
 					$('#correct').html(`Correct: ${correct}`)
@@ -146,6 +158,7 @@
 					stopwatch.pause();
 
 				},
+				//or incorrect answer
 				incorrect: function(){
 					incorrect++
 					$('#incorrect').html(`Incorrect: ${incorrect}`)
@@ -156,6 +169,7 @@
 					stopwatch.pause();
 
 				},
+				//or doesn't answer in allotted time
 				timeOut: function(){
 					unanswered++
 					$('#unanswered').html(`Unanswered: ${unanswered}`)
@@ -165,9 +179,8 @@
 					$('#question').html('Please stand by for the next question.')
 					stopwatch.pause();
 				},
+				//clear all game intervals
 				stopGame: function(){
-					//why does the "correct" screen prevent the game from stopping at end?
-					//TO-DO: how do I stop the timer
 					console.log('stopping')
 					clearInterval(timeUpInterval);
 					clearInterval(intervalId);
@@ -184,7 +197,8 @@
 					$('#start').toggleClass('hidden');
 					$('#game-over').html('You answered all the questions. Thanks for playing.');
 				},
-				//only run the code a set amount of times
+				//only run the code at an interval a set amount of times
+				//Questions: is this an overly complicated approach?
 				thisInterval: function(callback, delay, repetitions) {
 					var x = 0;
 					var intervalID = window.setInterval(function () {
@@ -194,6 +208,7 @@
 						}
 					}, delay);
 				},
+				//check if user has failed to select and answer in allotted time.
 				timeUp: function(){
 					if(!click){
 					game.stopGame();
@@ -240,7 +255,7 @@
 		}
 
 	};
-
+	//time-keeping object
 	var stopwatch = {
 		count: function() {
 			seconds = stopwatch.time--;
@@ -279,21 +294,20 @@
 		reset: function() {
 
 			stopwatch.time = 15;
-		  	  //  TODO: Change the "display" div to "00:00."
 		  	  $('#timer').html('00:15');
 
 		  	}
 		};
-
+		//callback to start game at api return
 		  function init(result) {
 		  	game.init();
 		  }
-
+		  //callback to start game should api fail
 		  function onFail(){
 		  	game.init();
 		  }
 
-	//execute when server responds
+	//execute when server responds with api data
 	apiCall(init);
 
 	// apiCall itself is defined as follows:

@@ -15,10 +15,11 @@
 				<img src="assets/imgs/trumpBuster.png" class="img img-responsive img-thumbnail col-xs-12 col-md-2" alt="trump buster placeholder" />
 				<h1>Nationalism Busters</h1>
 				<h2>Learn cool facts about interesting countries throughout the world</h2>
-				<div>
-					<span id='correct'>Correct:</span>
-					<span id='incorrect'>Incorrect:</span>
-					<span id="unanswered">Unanswered:</span>
+				<!-- area to update score -->
+				<div id="score">
+					<span id='correct'>Correct: 0</span>
+					<span id='incorrect'>Incorrect: 0</span>
+					<span id="unanswered">Unanswered: 0</span>
 				</div>
 			</div>
 
@@ -28,12 +29,19 @@
 <body>
 	<div class=container>
 		<div class = "row text-center">
+			<!-- show user that api call is in prgress -->
 			<h2 id="loadingDiv"></h2>
+			<!-- start new game button -->
 			<button id="start">start</button>
+			<!-- show user how much times/he has -->
 			<div id="timer"></div>
+			<!-- show user if answer was correct or time has run out -->
 			<div id="result"></div>
+			<!-- display game questions -->
 			<div id="question"></div>
+			<!-- display answer choices -->
 			<ul id="choices"></ul>
+			<!-- let user know when game has terminated -->
 			<div id="game-over"></di>
 		</div>
 	</div>
@@ -41,6 +49,8 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<!-- sheet with data should api request fail -->
 <script type="text/javascript" src="backup_data.js"></script>
+<!-- game functions and data -->
 <script type="text/javascript" src="assets/app.js"></script>
 </html>
