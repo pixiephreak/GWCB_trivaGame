@@ -6,7 +6,7 @@
 	//set how much time the player has to answer + 2
 	var timerDuration = 16*1000;
 	// set how much time the player has to see result +2
-	var resultDuration = 5*1000
+	var resultDuration = 5*1000;
 	//time count for stopwatch
 	var time;
 	//correct answer each time a question loads
@@ -28,7 +28,7 @@
 	//keeps track of how many questions have been asked
 	var counter=0;
 	//keep track of clicks
-	var click = false
+	var click = false;
 
 	//code to run on data return
 	var game = {
@@ -57,7 +57,7 @@
 							//show correct screen
 							game.correct();
 							//start the game again after x seconds
-							game.thisInterval(game.startGameAgain, resultDuration, 1)
+							game.thisInterval(game.startGameAgain, resultDuration, 1);
 						}
 					}else{
 						game.stopGame();
@@ -70,7 +70,7 @@
 						game.incorrect();
 						//if the game isn't over, then start it again after the established # of seconds
 						//Question: what would be a better/other way to do this?
-						game.thisInterval(game.startGameAgain, resultDuration, 1)
+						game.thisInterval(game.startGameAgain, resultDuration, 1);
 					}
 					}
 				});
@@ -133,7 +133,7 @@
 								if(typeof thisWrongAnswer != 'undefined')
 									answers.push(thisWrongAnswer);
 							}else{
-								answers.push("I really don't know.")
+								answers.push("I really don't know.");
 							}
 							//randomize order that answers are stored in answers array
 							game.shuffle(answers);
@@ -150,38 +150,38 @@
 				//display appropriate info if user clicks correct answer
 				correct: function(){
 					correct++;
-					$('#correct').html(`Correct: ${correct}`)
+					$('#correct').html(`Correct: ${correct}`);
 					$('#result').html('Correct!');
 					$('#question').empty();
 					$('#choices').empty();
-					$('#question').html('Please stand by for the next question.')
+					$('#question').html('Please stand by for the next question.');
 					stopwatch.pause();
 
 				},
 				//or incorrect answer
 				incorrect: function(){
-					incorrect++
+					incorrect++;
 					$('#incorrect').html(`Incorrect: ${incorrect}`)
 					$('#result').html(`The correct answer was ${answer}.`);
 					$('#question').empty();
 					$('#choices').empty();
-					$('#question').html('Please stand by for the next question.')
+					$('#question').html('Please stand by for the next question.');
 					stopwatch.pause();
 
 				},
 				//or doesn't answer in allotted time
 				timeOut: function(){
-					unanswered++
-					$('#unanswered').html(`Unanswered: ${unanswered}`)
+					unanswered++;
+					$('#unanswered').html(`Unanswered: ${unanswered}`);
 					$('#result').html(`Time's up. The correct answer was ${answer}.`);
 					$('#question').empty();
 					$('#choices').empty();
-					$('#question').html('Please stand by for the next question.')
+					$('#question').html('Please stand by for the next question.');
 					stopwatch.pause();
 				},
 				//clear all game intervals
 				stopGame: function(){
-					console.log('stopping')
+					console.log('stopping');
 					clearInterval(timeUpInterval);
 					clearInterval(intervalId);
 					clearInterval(stopwatchIntervalId);
@@ -220,7 +220,7 @@
 							//show correct screen
 							game.timeOut();
 							//start the game again after x seconds
-							game.thisInterval(game.startGameAgain, resultDuration, 1)
+							game.thisInterval(game.startGameAgain, resultDuration, 1);
 						}
 					}
 				},
