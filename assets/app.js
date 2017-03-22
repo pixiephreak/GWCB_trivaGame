@@ -113,11 +113,11 @@
 			console.log(question);
 			$('#question').html(question);
 			//Retreive and store answer from data obj
-			model.answer = country[clueType].toLocaleString('en');
+			model.answer = country[clueType];
 			answers = [];
 			console.log('answer', model.answer);
 			if(typeof model.answer != 'undefined'){
-				answers.push(model.answer);
+				answers.push(model.answer.toLocaleString('en'));
 			}else{
 				//if answer is undefined, include alternative data
 				('#choices').append(`<li class="choice">Freebie.We don't know.</li>`);
@@ -211,7 +211,6 @@
 				},
 				//check if user has failed to select and answer in allotted time.
 				timeUp: function(){
-					if(!model.click){
 					game.stopGame();
 					stopwatch.pause();
 					if(model.counter>=model.gameLength){
@@ -223,7 +222,7 @@
 							//start the game again after x seconds
 							game.thisInterval(game.startGameAgain, model.resultDuration, 1);
 						}
-					}
+
 				},
 				removeLoader: function(){
 			// fadeOut complete. Remove the loading div
@@ -258,6 +257,7 @@
 	};
 	//time-keeping object
 	var stopwatch = {
+		time: 15,
 		count: function() {
 			seconds = stopwatch.time--;
 			$('#timer').html(stopwatch.timeConverter(seconds));
