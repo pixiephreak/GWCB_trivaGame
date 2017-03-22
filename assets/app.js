@@ -189,7 +189,7 @@
 					clearInterval(correctIntervalId);
 				},
 				restart: function(){
-					console.log('firing restart', counter);
+					console.log('firing restart', model.counter);
 					game.stopGame();
 					model.counter = 0;
 					$('#timer').empty();
