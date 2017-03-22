@@ -1,22 +1,3 @@
-
-	// api endpoint (include languages?):
-	var queryURL = 'https://restcountries.eu/rest/v2/all?fields=name;capital;population;region;area;';
-	//set number of questions TO-DO ask for user input
-	var gameLength = 5;
-	//set how much time the player has to answer + 2
-	var timerDuration = 16*1000;
-	// set how much time the player has to see result +2
-	var resultDuration = 5*1000;
-	//time count for stopwatch
-	var time;
-	//correct answer each time a question loads
-	var answer;
-	//record # correct for each round of game
-	var correct = 0;
-	//record # inccorect for each round of game
-	var incorrect = 0;
-	//record # inccorect for each round of game
-	var unanswered = 0;
 	//interval for question screen
 	var intervalId;
 	//interval for stopwatch
@@ -25,14 +6,34 @@
 	var correctIntervalId;
 	// interval for timeUp scree
 	var timeUpInterval;
+
+	var model = {
+	// api endpoint (include languages?):
+	queryURL: 'https://restcountries.eu/rest/v2/all?fields=name;capital;population;region;area;',
+	//set number of questions TO-DO ask for user input
+	gameLength:5,
+	//set how much time the player has to answer + 2
+	timerDuration: 16*1000,
+	// set how much time the player has to see result +2
+	resultDuration: 5*1000,
+	//correct answer each time a question loads
+	answer: '',
+	//record # correct for each round of game
+	correct: 0,
+	//record # inccorect for each round of game
+	incorrect: 0,
+	//record # inccorect for each round of game
+	unanswered: 0,
 	//keeps track of how many questions have been asked
-	var counter=0;
+	counter:0,
 	//keep track of clicks
-	var click = false;
+	click: false
+}
 
 	//code to run on data return
 	var game = {
 		init: function(){
+			//Question: why does this off/on click syntax work on dynamically created elements?
 			$('#start').off('click').on('click', function(){
 				//figure out how to start stopwatch and hide 'page loading' at moment of response(is it in ajax call?)
 				$('#game-over').empty();
@@ -46,22 +47,22 @@
 				//load reamaining questions at interval
 				game.startGame();
 				$('#choices').off('click', '.choice').on('click', '.choice', function(){
-					click = true;
-					if(($(this).html()) == answer){
+					model.click = true;
+					if(($(this).html()) == model.answer){
 						game.stopGame();
 						//have the set number of questions been asked?
-						if(counter>=gameLength){
+						if(model.counter>=model.gameLength){
 							game.correct();
 							game.restart();
 							}else{
 							//show correct screen
 							game.correct();
 							//start the game again after x seconds
-							game.thisInterval(game.startGameAgain, resultDuration, 1);
+							game.thisInterval(game.startGameAgain, model.resultDuration, 1);
 						}
 					}else{
 						game.stopGame();
-						if(counter>=gameLength){
+						if(model.counter>=model.gameLength){
 							// display incorrect scree
 							game.incorrect();
 							// show/hide elem for start of game
@@ -70,7 +71,7 @@
 						game.incorrect();
 						//if the game isn't over, then start it again after the established # of seconds
 						//Question: what would be a better/other way to do this?
-						game.thisInterval(game.startGameAgain, resultDuration, 1);
+						game.thisInterval(game.startGameAgain, model.resultDuration, 1);
 					}
 					}
 				});
@@ -79,11 +80,10 @@
 		},
 		//show questions at a set interval
 		startGame: function(){
-			intervalId = setInterval(game.showQuestion,timerDuration);
+			intervalId = setInterval(game.showQuestion,model.timerDuration);
 		},
 		//reset intervals and call them again to restart
 		startGameAgain: function(){
-			click = false;
 			stopwatch.reset();
 			stopwatch.start();
 			game.showQuestion();
@@ -92,11 +92,12 @@
 		//use data in api response object to create trivia questions
 		showQuestion: function(){
 			//reset model data and displays
-			counter++;
-			console.log(counter);
+			model.counter++;
+			console.log(model.counter);
 			stopwatch.reset();
 			$('#choices').empty();
 			$('#result').empty();
+			//TO-DO move clue type/question/etc to model and wrongChoices to game obj
 			//select country and clue type for each question
 			var clueTypes = ['population', 'capital','region','area'];
 			var clueType = clueTypes[game.random(clueTypes.length)];
@@ -112,11 +113,11 @@
 			console.log(question);
 			$('#question').html(question);
 			//Retreive and store answer from data obj
-			answer = country[clueType].toLocaleString('en');
+			model.answer = country[clueType].toLocaleString('en');
 			answers = [];
-			console.log('answer', answer);
-			if(typeof answer != 'undefined'){
-				answers.push(answer);
+			console.log('answer', model.answer);
+			if(typeof model.answer != 'undefined'){
+				answers.push(model.answer);
 			}else{
 				//if answer is undefined, include alternative data
 				('#choices').append(`<li class="choice">Freebie.We don't know.</li>`);
@@ -129,7 +130,7 @@
 						};
 						for(let i=0; i<3; i++){
 							var thisWrongAnswer = wrongAnswer();
-							if(answers.indexOf(thisWrongAnswer) === -1 && thisWrongAnswer != answer){
+							if(answers.indexOf(thisWrongAnswer) === -1 && thisWrongAnswer != model.answer){
 								if(typeof thisWrongAnswer != 'undefined')
 									answers.push(thisWrongAnswer);
 							}else{
@@ -149,8 +150,8 @@
 				},
 				//display appropriate info if user clicks correct answer
 				correct: function(){
-					correct++;
-					$('#correct').html(`Correct: ${correct}`);
+					model.correct++;
+					$('#correct').html(`Correct: ${model.correct}`);
 					$('#result').html('Correct!');
 					$('#question').empty();
 					$('#choices').empty();
@@ -160,9 +161,9 @@
 				},
 				//or incorrect answer
 				incorrect: function(){
-					incorrect++;
-					$('#incorrect').html(`Incorrect: ${incorrect}`)
-					$('#result').html(`The correct answer was ${answer}.`);
+					model.incorrect++;
+					$('#incorrect').html(`Incorrect: ${model.incorrect}`)
+					$('#result').html(`The correct answer was ${model.answer}.`);
 					$('#question').empty();
 					$('#choices').empty();
 					$('#question').html('Please stand by for the next question.');
@@ -171,9 +172,9 @@
 				},
 				//or doesn't answer in allotted time
 				timeOut: function(){
-					unanswered++;
-					$('#unanswered').html(`Unanswered: ${unanswered}`);
-					$('#result').html(`Time's up. The correct answer was ${answer}.`);
+					model.unanswered++;
+					$('#unanswered').html(`Unanswered: ${model.unanswered}`);
+					$('#result').html(`Time's up. The correct answer was ${model.answer}.`);
 					$('#question').empty();
 					$('#choices').empty();
 					$('#question').html('Please stand by for the next question.');
@@ -190,7 +191,7 @@
 				restart: function(){
 					console.log('firing restart', counter);
 					game.stopGame();
-					counter = 0;
+					model.counter = 0;
 					$('#timer').empty();
 					$('#question').empty();
 					$('#choices').empty();
@@ -198,7 +199,7 @@
 					$('#game-over').html('You answered all the questions. Thanks for playing.');
 				},
 				//only run the code at an interval a set amount of times
-				//Questions: is this an overly complicated approach?
+				//Question: is this an overly complicated approach?
 				thisInterval: function(callback, delay, repetitions) {
 					var x = 0;
 					var intervalID = window.setInterval(function () {
@@ -210,17 +211,17 @@
 				},
 				//check if user has failed to select and answer in allotted time.
 				timeUp: function(){
-					if(!click){
+					if(!model.click){
 					game.stopGame();
 					stopwatch.pause();
-					if(counter>=gameLength){
+					if(model.counter>=model.gameLength){
 							game.timeOut();
 							game.restart();
 							}else{
 							//show correct screen
 							game.timeOut();
 							//start the game again after x seconds
-							game.thisInterval(game.startGameAgain, resultDuration, 1);
+							game.thisInterval(game.startGameAgain, model.resultDuration, 1);
 						}
 					}
 				},
@@ -313,7 +314,7 @@
 	// apiCall itself is defined as follows:
 	function apiCall(callback) {
 		$.ajax({
-			url: queryURL,
+			url: model.queryURL,
 			method: 'GET',
 			success: callback,
 			error: onFail()
