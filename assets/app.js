@@ -98,17 +98,10 @@
 			$('#choices').empty();
 			$('#result').empty();
 			//TO-DO move clue type/question/etc to model and wrongChoices to game obj
-			//select country and clue type for each question
 			var clueTypes = ['population', 'capital','region','area'];
 			var clueType = clueTypes[game.random(clueTypes.length)];
 			var countryIndex = game.random(result.length);
 			var country = result[countryIndex];
-			//TO-DO: write loop to if clueType is a language
-		    // var languages = result[countryIndex].languages;
-		    // var languagesArr = [];
-			// languages.forEach(function(language) {
-			// 		languagesArr.push(language.name);
-			// });
 			var question = `What is the ${clueType} of ${country.name}?`;
 			console.log(question);
 			$('#question').html(question);
